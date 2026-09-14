@@ -9,7 +9,7 @@
     --blue:#2E86DE; --red:#E74C3C; --yellow:#F39C12; --green:#27AE60;
     --bg:#F4F5FA; --text:#2B2B2B; --muted:#8A8F9C; --line:#ECECF2;
   }
-  *{box-sizing:border-box;margin:0;padding:0;}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
   body{font-family:"Microsoft YaHei","PingFang SC",sans-serif;background:var(--bg);color:var(--text);padding-bottom:48px;}
   header{background:linear-gradient(135deg,#7B7BFF,#5A5AD8);color:#fff;padding:30px 20px 24px;text-align:center;}
   header h1{font-size:26px;letter-spacing:2px;}
@@ -80,14 +80,46 @@
   #tip .warn{color:#FFD666;}
   .hidden{display:none;}
   @media (max-width:760px){
-    .vrow{grid-template-columns:118px 1fr 58px;}
-    .vrow .num,.vrow .num.cur{display:none;}
-    .vname{font-size:14px;}
-    .drow{grid-template-columns:104px 1fr 1fr;column-gap:0;}
-    .dname{font-size:13px;padding-right:6px;}
+    header{padding:22px 14px 18px;}
+    header h1{font-size:22px;letter-spacing:1px;}
+    header .sub{font-size:12px;line-height:1.7;}
+    .wrap{padding:0 10px;}
+    nav.tabs{display:flex;gap:8px;margin:12px 0 2px;}
+    .tab-btn{flex:1;padding:9px 6px;font-size:14px;}
+    .card{padding:12px 12px 10px;border-radius:12px;margin-top:10px;}
+    .legend{font-size:12px;gap:10px 14px;justify-content:flex-start;padding:2px 0 8px;}
+    .sortbar{justify-content:flex-start;}
+    .sort-btn{padding:6px 12px;font-size:12px;}
+
+    /* 估值行（宽基/行业）：名称+位置 / 轨道 / 最低·当前·最高 三段式堆叠 */
+    .vrow{grid-template-columns:repeat(3,1fr);grid-template-areas:
+      "name name pos"
+      "track track track"
+      "min cur max";gap:4px 8px;padding:10px 2px;}
+    .vrow .vname{grid-area:name;font-size:14px;}
+    .vrow .track{grid-area:track;height:28px;}
+    .vrow .pos{grid-area:pos;font-size:14px;}
+    .vrow .num{grid-area:min;text-align:center;font-size:12px;}
+    .vrow .num.cur{grid-area:cur;font-size:13px;}
+    .vrow .num:nth-child(5){grid-area:max;}
+    .vrow .num small{display:inline;font-size:10px;margin-right:3px;color:#9AA0AE;}
+    .track .p.pmin,.track .p.pmax{width:12px;height:12px;}
+    .track .p.pcur{width:16px;height:16px;}
+
+    /* 红利行：名称整行，红/蓝轴线各占一行，中轴对齐在行中央 */
+    .drow{grid-template-columns:1fr 1fr;grid-template-areas:"name name" "red blue";column-gap:0;row-gap:4px;padding:9px 2px;}
+    .drow .dname{grid-area:name;font-size:13px;padding-right:4px;}
+    .drow .daxis.red{grid-area:red;padding-right:6px;}
+    .drow .daxis.blue{grid-area:blue;padding-left:6px;}
     .daxis .v{font-size:12px;min-width:34px;}
-    .daxis .bar{height:10px;}
-    .daxis.red{padding-right:5px;} .daxis.blue{padding-left:5px;}
+    .daxis .bar{height:11px;}
+
+    .notes{margin-top:10px;font-size:12px;line-height:1.8;}
+    footer{font-size:12px;line-height:1.8;padding:0 12px max(16px, env(safe-area-inset-bottom));}
+    #tip{font-size:12px;max-width:240px;}
+
+    /* 触屏设备：点按后不保留悬停高亮 */
+    @media (hover:none){ .vrow:hover,.drow:hover{background:transparent;} }
   }
 </style>
 </head>
@@ -295,6 +327,7 @@ function renderDividend(sortMode){
 
 /* ---------- Tooltip ---------- */
 const tip = document.getElementById("tip");
+const isTouch = window.matchMedia("(pointer:coarse)").matches;
 function tipHtml(d){
   if(d.y !== undefined){ // 红利
     return `<div class="t1">${d.n}</div>
@@ -320,20 +353,56 @@ function moveTip(e){
   if(y + h > innerHeight - 8) y = e.clientY - h - pad;
   tip.style.left = x + "px"; tip.style.top = y + "px";
 }
-["list-broad","list-industry","list-dividend"].forEach(id=>{
-  const box = document.getElementById(id);
-  box.addEventListener("mousemove", e=>{
-    const row = e.target.closest("[data-i]");
-    const rows = currentRows[id];
-    const d = row && rows && rows[row.dataset.i];
-    if(d){
-      tip.innerHTML = tipHtml(d);
-      tip.style.display = "block";
-      moveTip(e);
-    } else tip.style.display = "none";
+/* 触屏：点按行显示/隐藏详情（浮层固定在行上方，避免遮挡手指） */
+function showTipAt(row, d, listId){
+  tip.innerHTML = tipHtml(d);
+  tip.style.display = "block";
+  tip.dataset.i = row.dataset.i;
+  tip.dataset.list = listId;
+  const rect = row.getBoundingClientRect();
+  const w = tip.offsetWidth, h = tip.offsetHeight;
+  let x = rect.left + rect.width / 2 - w / 2;
+  let y = rect.top - h - 8;
+  if(x < 8) x = 8;
+  if(x + w > innerWidth - 8) x = innerWidth - w - 8;
+  if(y < 8) y = rect.bottom + 8;
+  tip.style.left = x + "px"; tip.style.top = y + "px";
+}
+const tipListIds = ["list-broad","list-industry","list-dividend"];
+if(isTouch){
+  /* 触屏设备：点按行 → 显示详情；再点同行或点空白 → 关闭 */
+  tipListIds.forEach(id=>{
+    const box = document.getElementById(id);
+    box.addEventListener("click", e=>{
+      const row = e.target.closest("[data-i]");
+      const d = row && currentRows[id] && currentRows[id][row.dataset.i];
+      if(!d){ tip.style.display = "none"; return; }
+      if(tip.style.display === "block" && tip.dataset.i === row.dataset.i && tip.dataset.list === id){
+        tip.style.display = "none";
+      }else{
+        showTipAt(row, d, id);
+      }
+    });
   });
-  box.addEventListener("mouseleave", ()=> tip.style.display = "none");
-});
+  document.addEventListener("click", e=>{
+    if(!e.target.closest(".vrow") && !e.target.closest(".drow")) tip.style.display = "none";
+  });
+}else{
+  /* 桌面：悬停显示 */
+  tipListIds.forEach(id=>{
+    const box = document.getElementById(id);
+    box.addEventListener("mousemove", e=>{
+      const row = e.target.closest("[data-i]");
+      const d = row && currentRows[id] && currentRows[id][row.dataset.i];
+      if(d){
+        tip.innerHTML = tipHtml(d);
+        tip.style.display = "block";
+        moveTip(e);
+      } else tip.style.display = "none";
+    });
+    box.addEventListener("mouseleave", ()=> tip.style.display = "none");
+  });
+}
 
 /* ---------- Tabs & Sorts ---------- */
 document.querySelectorAll(".tab-btn").forEach(btn=>{
