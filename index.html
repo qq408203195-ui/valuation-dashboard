@@ -225,15 +225,15 @@ const dividend = [
   {n:"恒生港股通高股息低波动",  y:5.69, hk:true},
   {n:"港股通央企红利",          y:5.51, hk:true},
   {n:"恒生港股通高股息率",      y:5.51, hk:true},
-  {n:"经营权REITs市值加权IRR",  y:5.25, snap:true},
+  {n:"经营权REITs市值加权IRR",  y:5.31, snap:true},
   {n:"港股通高股息CNY",         y:5.20, hk:true},
-  {n:"产权REITs市值加权分派率", y:4.62, snap:true},
+  {n:"产权REITs市值加权分派率", y:4.70, snap:true},
   {n:"红利低波",                y:4.27},
   {n:"红利低波100",             y:4.25},
   {n:"中证红利",                y:4.21},
   {n:"上证红利",                y:3.98},
-  {n:"北京二手房租息中位数",    y:2.40, snap:true},
-  {n:"上海二手房租息中位数",    y:2.34, snap:true},
+  {n:"北京二手房租息中位数",    y:2.36, snap:true},
+  {n:"上海二手房租息中位数",    y:2.27, snap:true},
 ];
 // 回本时间（年）= log(2) / log(1 + 股息率)：红利再投资复利口径收回本金所需年数
 dividend.forEach(d => d.years = Math.log(2) / Math.log(1 + d.y / 100));
