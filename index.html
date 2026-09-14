@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>指数估值仪表盘 · 2026.9.10</title>
+<style>
+  :root{
+    --blue:#2E86DE; --red:#E74C3C; --yellow:#F39C12; --green:#27AE60;
+    --bg:#F4F5FA; --text:#2B2B2B; --muted:#8A8F9C; --line:#ECECF2;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:"Microsoft YaHei","PingFang SC",sans-serif;background:var(--bg);color:var(--text);padding-bottom:48px;}
+  header{background:linear-gradient(135deg,#7B7BFF,#5A5AD8);color:#fff;padding:30px 20px 24px;text-align:center;}
+  header h1{font-size:26px;letter-spacing:2px;}
+  header .sub{margin-top:8px;font-size:14px;opacity:.9;}
+  header .sub b{font-weight:600;}
+  .wrap{max-width:960px;margin:0 auto;padding:0 14px;}
+  nav.tabs{display:flex;gap:10px;justify-content:center;margin:18px 0 4px;}
+  .tab-btn{border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:600;
+    padding:10px 26px;border-radius:999px;background:#fff;color:#555;box-shadow:0 1px 4px rgba(0,0,0,.06);transition:.15s;}
+  .tab-btn.active{background:linear-gradient(135deg,#7B7BFF,#5A5AD8);color:#fff;}
+  .card{background:#fff;border-radius:14px;box-shadow:0 1px 6px rgba(40,40,90,.06);padding:16px 18px;margin-top:14px;}
+  .legend{display:flex;flex-wrap:wrap;gap:18px;justify-content:center;font-size:14px;color:#666;padding:4px 0 10px;}
+  .legend .it{display:flex;align-items:center;gap:6px;}
+  .dot{border-radius:50%;flex:none;}
+  .dot.b{background:var(--blue);} .dot.r{background:var(--red);} .dot.y{background:var(--yellow);}
+  .sortbar{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;padding-bottom:8px;border-bottom:1px solid var(--line);}
+  .sort-btn{border:1px solid #E3E4EE;background:#fff;color:#666;font-family:inherit;font-size:13px;
+    padding:5px 14px;border-radius:999px;cursor:pointer;transition:.15s;}
+  .sort-btn.active{border-color:#7B7BFF;background:#F0F0FF;color:#4A4AD0;font-weight:600;}
+
+  .vrow{display:grid;grid-template-columns:158px 1fr 74px 84px 74px 66px;gap:10px;align-items:center;
+    padding:9px 4px;border-bottom:1px solid var(--line);cursor:default;transition:background .12s;}
+  .vrow:last-child{border-bottom:none;}
+  .vrow:hover{background:#F7F7FF;}
+  .vname{font-size:15px;font-weight:600;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+  .star{color:#F5B301;font-size:13px;}
+  .badge-pb{background:#FFF3CD;color:#8A6D00;font-size:11px;font-weight:700;border-radius:4px;padding:1px 5px;}
+  .track{position:relative;height:26px;}
+  .track .line{position:absolute;left:0;right:0;top:50%;height:3px;transform:translateY(-50%);
+    background:#E7E7EF;border-radius:2px;}
+  .track .seg{position:absolute;top:50%;height:3px;transform:translateY(-50%);border-radius:2px;}
+  .track .p{position:absolute;top:50%;transform:translate(-50%,-50%);border-radius:50%;border:2px solid #fff;
+    box-shadow:0 0 0 1px rgba(0,0,0,.08);}
+  .p.pmin{width:11px;height:11px;background:var(--blue);}
+  .p.pmax{width:11px;height:11px;background:var(--yellow);}
+  .p.pcur{width:15px;height:15px;background:var(--red);z-index:2;}
+  .num{font-size:14px;text-align:right;font-variant-numeric:tabular-nums;color:#555;}
+  .num.cur{color:var(--red);font-weight:700;font-size:15px;}
+  .num small{display:block;font-size:11px;color:var(--muted);font-weight:400;}
+  .pos{font-size:15px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums;}
+  .pos.low{color:var(--green);} .pos.mid{color:var(--yellow);} .pos.high{color:var(--red);}
+
+  .drow{display:grid;grid-template-columns:186px 1fr 1fr;column-gap:0;align-items:center;
+    padding:9px 4px;border-bottom:1px solid var(--line);transition:background .12s;}
+  .drow:last-child{border-bottom:none;}
+  .drow:hover{background:#F7F7FF;}
+  .dname{font-size:15px;font-weight:600;display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding-right:10px;}
+  .badge-hk{background:#FFF3CD;color:#8A6D00;font-size:11px;font-weight:700;border-radius:4px;padding:1px 5px;}
+  .badge-snap{background:#ECEFF4;color:#5B6470;font-size:11px;font-weight:700;border-radius:4px;padding:1px 5px;}
+  /* 红利：以中线为共同原点，红条向左延伸（回本越久越长），蓝条向右延伸（股息越高越长） */
+  .daxis{display:flex;align-items:center;gap:7px;min-width:0;}
+  .daxis.red{justify-content:flex-end;border-right:2px solid #C9C9D6;padding-right:8px;}
+  .daxis.blue{justify-content:flex-start;padding-left:8px;}
+  .dbarwrap{flex:1;min-width:0;display:flex;align-items:center;}
+  .daxis.red .dbarwrap{justify-content:flex-end;}
+  .daxis .bar{height:12px;border-radius:2px;}
+  .daxis.red .bar{background:var(--red);}
+  .daxis.blue .bar{background:#1D4ED8;}
+  .daxis .v{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;flex:none;min-width:42px;}
+  .daxis.red .v{color:var(--red);text-align:right;}
+  .daxis.blue .v{color:#1D4ED8;text-align:left;}
+  .notes{margin-top:14px;font-size:13px;color:#777;line-height:1.9;}
+  .notes b{color:#555;}
+  footer{margin-top:18px;text-align:center;font-size:13px;color:#9A9AA8;}
+  #tip{position:fixed;display:none;z-index:99;background:#2B2B3C;color:#fff;border-radius:10px;
+    padding:10px 14px;font-size:13px;line-height:1.7;pointer-events:none;box-shadow:0 4px 18px rgba(0,0,0,.25);max-width:280px;}
+  #tip .t1{font-weight:700;font-size:14px;margin-bottom:2px;}
+  #tip .warn{color:#FFD666;}
+  .hidden{display:none;}
+  @media (max-width:760px){
+    .vrow{grid-template-columns:118px 1fr 58px;}
+    .vrow .num,.vrow .num.cur{display:none;}
+    .vname{font-size:14px;}
+    .drow{grid-template-columns:104px 1fr 1fr;column-gap:0;}
+    .dname{font-size:13px;padding-right:6px;}
+    .daxis .v{font-size:12px;min-width:34px;}
+    .daxis .bar{height:10px;}
+    .daxis.red{padding-right:5px;} .daxis.blue{padding-left:5px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>指数估值仪表盘</h1>
+  <div class="sub">统计周期 <b>2021/9/10 — 2026/9/10</b>（近5年）　·　数据来源 <b>Wind · 韭圈儿</b>　·　<span style="opacity:.75">REITs/二手房租息为 2026/9/3 快照</span></div>
+</header>
+
+<div class="wrap">
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="broad">宽基指数</button>
+    <button class="tab-btn" data-tab="industry">行业指数</button>
+    <button class="tab-btn" data-tab="dividend">红利指数</button>
+  </nav>
+
+  <!-- 宽基 -->
+  <section id="tab-broad">
+    <div class="card">
+      <div class="legend">
+        <span class="it"><span class="dot b"></span>区间最低估值</span>
+        <span class="it"><span class="dot r"></span>当前估值</span>
+        <span class="it"><span class="dot y"></span>区间最高估值</span>
+        <span class="it">右侧 % = 区间内相对位置</span>
+      </div>
+      <div class="sortbar" data-for="broad">
+        <button class="sort-btn active" data-sort="default">默认顺序</button>
+        <button class="sort-btn" data-sort="desc">位置 高→低</button>
+        <button class="sort-btn" data-sort="asc">位置 低→高</button>
+      </div>
+      <div id="list-broad"></div>
+      <div class="notes">
+        <b>★</b> 发布时间不足 5 年的指数均使用上市以来数据（中证A50、中证2000、中证A500）<br>
+        宽基指数均采用 <b>市盈率 PE</b> 估值　·　位置 &lt;30% 偏低估 / 30-70% 中性 / &gt;70% 偏高估
+      </div>
+    </div>
+  </section>
+
+  <!-- 行业 -->
+  <section id="tab-industry" class="hidden">
+    <div class="card">
+      <div class="legend">
+        <span class="it"><span class="dot b"></span>区间最低估值</span>
+        <span class="it"><span class="dot r"></span>当前估值</span>
+        <span class="it"><span class="dot y"></span>区间最高估值</span>
+        <span class="it"><span class="badge-pb">PB</span> 黄标行业用市净率 PB 估值</span>
+      </div>
+      <div class="sortbar" data-for="industry">
+        <button class="sort-btn active" data-sort="default">默认顺序</button>
+        <button class="sort-btn" data-sort="desc">位置 高→低</button>
+        <button class="sort-btn" data-sort="asc">位置 低→高</button>
+      </div>
+      <div id="list-industry"></div>
+      <div class="notes">
+        <b>PB 估值行业（黄标，共 8 个）：</b>非银金融、房地产、钢铁、银行、有色金属、煤炭、石油石化 + 公用事业<br>
+        其余行业采用 <b>市盈率 PE</b> 估值　·　行业分类：申万一级行业（仅展示部分主流行业）<br>
+        <b>★</b> 发布不足 5 年使用上市以来数据：港股通创新药（987018.CNI）<br>
+        勘误（2026.9.10，经 Wind 逐一核验）：人工智能=产业指数（931071.CSI，PE 区间 30.90–77.40）；机器人=中证机器人（H30590.CSI），原数据无法在 Wind 复现；银行已更换为真实 PB；公用事业图源数据本即为 PB，已修正标注
+      </div>
+    </div>
+  </section>
+
+  <!-- 红利 -->
+  <section id="tab-dividend" class="hidden">
+    <div class="card">
+      <div class="legend">
+        <span class="it"><span class="dot" style="background:var(--red)"></span>复利回本时间（年）— 由中线向左，越左越长</span>
+        <span class="it"><span class="dot" style="background:#1D4ED8"></span>股息率（%）— 由中线向右，越右越高</span>
+        <span class="it"><span class="badge-hk">港股</span> 需缴额外红利税</span>
+      </div>
+      <div class="sortbar" data-for="dividend">
+        <button class="sort-btn active" data-sort="default">默认顺序</button>
+        <button class="sort-btn" data-sort="yield">股息率 高→低</button>
+        <button class="sort-btn" data-sort="years">回本时间 短→长</button>
+      </div>
+      <div id="list-dividend"></div>
+      <div class="notes">
+        <b>黄标（港股）：</b>境内港股红利基金需缴纳额外 <b>10%–28%</b> 红利税，真实收益及回本时间与账面数值有一定差距<br>
+        红蓝两线以同一根中线为起点、方向相反：红条向左延伸（长度 = 回本时间 ÷ 32 年），蓝条向右延伸（长度 = 股息率 ÷ 7%），全部指数的起点严格重合于同一条垂直线
+        9 个红利指数股息率取自 Wind（2026.9.10），REITs 两项与二手房租息为 2026.9.3 静态值（Wind 无对应指数，来源：韭圈儿、好好选房 App）<br>
+        <b>回本时间公式：</b>log(2) ÷ log(1 + 股息率)，即红利再投资复利口径下收回本金所需年数（假设股息率不变、股价不变）；同口径的简单算法 100÷股息率 会明显更长
+      </div>
+    </div>
+  </section>
+
+  <footer>基金有风险　投资需谨慎　·　宽基/行业/红利指数数据：Wind（2026.9.10）　REITs/二手房租息：静态快照（2026.9.3）</footer>
+</div>
+
+<div id="tip"></div>
+
+<script>
+const broadBase = [
+  {n:"恒生科技",   min:14.86, cur:23.10,  max:58.53},
+  {n:"创业板指",   min:22.88, cur:38.22,  max:66.47},
+  {n:"中证A50",    min:13.88, cur:16.17,  max:19.94,  star:true},
+  {n:"中证2000",   min:44.03, cur:119.70, max:227.93, star:true},
+  {n:"科创50",     min:35.26, cur:132.84, max:263.93},
+  {n:"纳斯达克100",min:22.46, cur:30.06,  max:39.25},
+  {n:"中证1000",   min:24.02, cur:43.51,  max:57.54},
+  {n:"标普500",    min:17.90, cur:25.05,  max:29.90},
+  {n:"中证500",    min:15.58, cur:32.99,  max:42.06},
+  {n:"中证A500",   min:11.57, cur:16.02,  max:18.34,  star:true},
+  {n:"恒生指数",   min:7.23,  cur:11.24,  max:12.97},
+  {n:"沪深300",    min:10.29, cur:13.59,  max:14.93},
+];
+
+const industry = [
+  {n:"港股通创新药", min:22.75, cur:34.51, max:250.32, star:true},
+  {n:"食品饮料",     min:16.52, cur:21.05, max:46.57},
+  {n:"国防军工",     min:36.91, cur:61.22, max:109.50},
+  {n:"非银金融",     min:0.91,  cur:1.12,  max:1.62,  pb:true},
+  {n:"汽车",         min:19.55, cur:26.10, max:39.03},
+  {n:"电力设备",     min:13.64, cur:29.33, max:58.87},
+  {n:"人工智能",     min:30.90, cur:49.57, max:77.40},
+  {n:"公用事业",     min:1.39,  cur:1.60,  max:1.99,  pb:true},
+  {n:"计算机",       min:34.65, cur:62.10, max:102.14},
+  {n:"传媒",         min:20.47, cur:35.99, max:53.86},
+  {n:"房地产",       min:0.54,  cur:0.81,  max:1.09,  pb:true},
+  {n:"通信",         min:23.89, cur:52.40, max:79.92},
+  {n:"机器人",       min:27.94, cur:53.18, max:89.88},
+  {n:"钢铁",         min:0.73,  cur:1.01,  max:1.72,  pb:true},
+  {n:"家用电器",     min:11.71, cur:15.19, max:18.79},
+  {n:"电子",         min:20.32, cur:60.71, max:106.44},
+  {n:"医药生物",     min:20.31, cur:32.55, max:41.34},
+  {n:"银行",         min:0.42,  cur:0.53,  max:0.67,  pb:true},
+  {n:"有色金属",     min:1.68,  cur:3.13,  max:4.69,  pb:true},
+  {n:"机械设备",     min:19.20, cur:43.99, max:50.58},
+  {n:"煤炭",         min:1.11,  cur:1.55,  max:2.07,  pb:true},
+  {n:"石油石化",     min:1.10,  cur:1.43,  max:2.10,  pb:true},
+];
+
+const dividend = [
+  {n:"国新港股通央企红利",     y:6.32, hk:true},
+  {n:"恒生港股通高股息低波动",  y:5.69, hk:true},
+  {n:"港股通央企红利",          y:5.51, hk:true},
+  {n:"恒生港股通高股息率",      y:5.51, hk:true},
+  {n:"经营权REITs市值加权IRR",  y:5.25, snap:true},
+  {n:"港股通高股息CNY",         y:5.20, hk:true},
+  {n:"产权REITs市值加权分派率", y:4.62, snap:true},
+  {n:"红利低波",                y:4.27},
+  {n:"红利低波100",             y:4.25},
+  {n:"中证红利",                y:4.21},
+  {n:"上证红利",                y:3.98},
+  {n:"北京二手房租息中位数",    y:2.40, snap:true},
+  {n:"上海二手房租息中位数",    y:2.34, snap:true},
+];
+// 回本时间（年）= log(2) / log(1 + 股息率)：红利再投资复利口径收回本金所需年数
+dividend.forEach(d => d.years = Math.log(2) / Math.log(1 + d.y / 100));
+
+const posOf = d => d.max === d.min ? 50 : Math.max(0, Math.min(100, (d.cur - d.min) / (d.max - d.min) * 100));
+const posClass = p => p < 30 ? "low" : (p < 70 ? "mid" : "high");
+const fmt = v => v.toFixed(2);
+
+const state = {broad:"default", industry:"default", dividend:"default"};
+const currentRows = {};   // 各列表独立的行数据（供 tooltip 用），key 为 listId
+
+/* ---------- 宽基 / 行业 ---------- */
+function renderValuation(listId, data, sortMode, defaultOrder){
+  let rows = data.map((d,i)=>({...d, order:i}));
+  if(sortMode==="desc") rows.sort((a,b)=>posOf(b)-posOf(a));
+  if(sortMode==="asc")  rows.sort((a,b)=>posOf(a)-posOf(b));
+  currentRows[listId] = rows;
+
+  document.getElementById(listId).innerHTML = rows.map((d,i)=>{
+    const p = posOf(d), cls = posClass(p);
+    // 点位置：min 固定 0%，max 固定 100%，cur 按比例（可越界时夹住）
+    const cp = Math.max(0, Math.min(100, p));
+    const curBelow = d.cur < d.min;
+    return `<div class="vrow" data-i="${i}">
+      <div class="vname">${d.n}
+        ${d.pb ? '<span class="badge-pb">PB</span>' : ''}
+        ${d.star ? '<span class="star" title="发布不足5年，用上市以来数据">★</span>' : ''}
+      </div>
+      <div class="track">
+        <div class="line"></div>
+        <div class="p pmin" style="left:0%"></div>
+        <div class="p pcur" style="left:${cp}%"></div>
+        <div class="p pmax" style="left:100%"></div>
+      </div>
+      <div class="num"><small>最低</small>${fmt(d.min)}</div>
+      <div class="num cur"><small>当前</small>${fmt(d.cur)}</div>
+      <div class="num"><small>最高</small>${fmt(d.max)}</div>
+      <div class="pos ${cls}">${p.toFixed(0)}%</div>
+    </div>`;
+  }).join("");
+}
+
+/* ---------- 红利 ---------- */
+const MAX_YEARS = 32, MAX_YIELD = 6.2;
+function renderDividend(sortMode){
+  let rows = dividend.map((d,i)=>({...d, order:i}));
+  if(sortMode==="yield") rows.sort((a,b)=>b.y-a.y);
+  if(sortMode==="years") rows.sort((a,b)=>a.years-b.years);
+  currentRows["list-dividend"] = rows;
+
+  document.getElementById("list-dividend").innerHTML = rows.map((d,i)=>{
+    return `<div class="drow" data-i="${i}">
+      <div class="dname">${d.n}${d.hk ? '<span class="badge-hk">港股</span>' : ''}${d.snap ? '<span class="badge-snap">快照</span>' : ''}</div>
+      <div class="daxis red"><div class="dbarwrap"><div class="bar" style="width:${(d.years/MAX_YEARS*100).toFixed(1)}%"></div></div><span class="v">${d.years.toFixed(2)}</span></div>
+      <div class="daxis blue"><span class="v">${d.y.toFixed(2)}</span><div class="dbarwrap"><div class="bar" style="width:${(d.y/MAX_YIELD*100).toFixed(1)}%"></div></div></div>
+    </div>`;
+  }).join("");
+}
+
+/* ---------- Tooltip ---------- */
+const tip = document.getElementById("tip");
+function tipHtml(d){
+  if(d.y !== undefined){ // 红利
+    return `<div class="t1">${d.n}</div>
+      红利回本时间：<b>${d.years.toFixed(2)} 年</b><br>
+      股息率：<b>${d.y.toFixed(2)}%</b><br>
+      <span class="mut">回本口径：红利再投资复利，log(2)÷log(1+股息率)</span>
+      ${d.hk ? '<br><span class="warn">⚠ 港股通类：需缴额外 10%–28% 红利税，实际回本更久</span>' : ''}
+      ${d.snap ? '<br><span class="warn">📌 非标准指数，为 2026.9.3 快照值（Wind 无对应数据）</span>' : ''}`;
+  }
+  const metric = d.pb ? "PB（市净率）" : "PE（市盈率）";
+  const p = posOf(d);
+  return `<div class="t1">${d.n}</div>
+    估值指标：<b>${metric}</b><br>
+    区间最低 <b>${fmt(d.min)}</b>　当前 <b>${fmt(d.cur)}</b>　最高 <b>${fmt(d.max)}</b><br>
+    区间内相对位置：<b>${p.toFixed(1)}%</b>
+    ${d.cur < d.min ? '<br><span class="warn">当前值已低于区间最低（创新低）</span>' : ''}
+    ${d.star ? '<br><span class="warn">★ 发布不足5年，使用上市以来数据</span>' : ''}`;
+}
+function moveTip(e){
+  const pad = 14, w = tip.offsetWidth, h = tip.offsetHeight;
+  let x = e.clientX + pad, y = e.clientY + pad;
+  if(x + w > innerWidth - 8)  x = e.clientX - w - pad;
+  if(y + h > innerHeight - 8) y = e.clientY - h - pad;
+  tip.style.left = x + "px"; tip.style.top = y + "px";
+}
+["list-broad","list-industry","list-dividend"].forEach(id=>{
+  const box = document.getElementById(id);
+  box.addEventListener("mousemove", e=>{
+    const row = e.target.closest("[data-i]");
+    const rows = currentRows[id];
+    const d = row && rows && rows[row.dataset.i];
+    if(d){
+      tip.innerHTML = tipHtml(d);
+      tip.style.display = "block";
+      moveTip(e);
+    } else tip.style.display = "none";
+  });
+  box.addEventListener("mouseleave", ()=> tip.style.display = "none");
+});
+
+/* ---------- Tabs & Sorts ---------- */
+document.querySelectorAll(".tab-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.toggle("active", b===btn));
+    ["broad","industry","dividend"].forEach(t=>
+      document.getElementById("tab-"+t).classList.toggle("hidden", t!==btn.dataset.tab));
+    tip.style.display = "none";
+  });
+});
+document.querySelectorAll(".sortbar").forEach(bar=>{
+  bar.addEventListener("click", e=>{
+    const btn = e.target.closest(".sort-btn"); if(!btn) return;
+    bar.querySelectorAll(".sort-btn").forEach(b=>b.classList.toggle("active", b===btn));
+    const mode = btn.dataset.sort, tab = bar.dataset.for;
+    state[tab] = mode;
+    if(tab==="broad")    renderValuation("list-broad", broadBase, mode);
+    if(tab==="industry") renderValuation("list-industry", industry, mode);
+    if(tab==="dividend") renderDividend(mode);
+  });
+});
+
+/* ---------- init ---------- */
+renderValuation("list-broad", broadBase, "default");
+renderValuation("list-industry", industry, "default");
+renderDividend("default");
+</script>
+</body>
+</html>
