@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>指数估值仪表盘 · 2026.9.10</title>
+<title>指数估值仪表盘 · 2026.9.17</title>
 <style>
   :root{
     --blue:#2E86DE; --red:#E74C3C; --yellow:#F39C12; --green:#27AE60;
@@ -127,7 +127,7 @@
 
 <header>
   <h1>指数估值仪表盘</h1>
-  <div class="sub">统计周期 <b>2021/9/10 — 2026/9/10</b>（近5年）　·　数据来源 <b>Wind · 韭圈儿</b>　·　<span style="opacity:.75">REITs/二手房租息为 2026/9/10 快照</span></div>
+  <div class="sub">统计周期 <b>2021/9/17 — 2026/9/17</b>（近5年）　·　数据来源 <b>Wind · 韭圈儿</b>　·　<span style="opacity:.75">REITs/二手房租息为 2026/9/10 快照</span></div>
 </header>
 
 <div class="wrap">
@@ -206,50 +206,50 @@
     </div>
   </section>
 
-  <footer>基金有风险　投资需谨慎　·　宽基/行业/红利指数数据：Wind（2026.9.10）　REITs/二手房租息：静态快照（2026.9.10）</footer>
+  <footer>基金有风险　投资需谨慎　·　宽基/行业指数数据：Wind（2026.9.17）　红利指数数据：Wind（2026.9.10）　REITs/二手房租息：静态快照（2026.9.10）</footer>
 </div>
 
 <div id="tip"></div>
 
 <script>
 const broadBase = [
-  {n:"恒生科技",   min:14.86, cur:23.10,  max:58.53},
-  {n:"创业板指",   min:22.88, cur:38.22,  max:66.47},
-  {n:"中证A50",    min:13.88, cur:16.17,  max:19.94,  star:true},
-  {n:"中证2000",   min:44.03, cur:119.70, max:227.93, star:true},
-  {n:"科创50",     min:35.26, cur:132.84, max:263.93},
-  {n:"纳斯达克100",min:22.46, cur:30.06,  max:39.25},
-  {n:"中证1000",   min:24.02, cur:43.51,  max:57.54},
-  {n:"标普500",    min:17.90, cur:25.05,  max:29.90},
-  {n:"中证500",    min:15.58, cur:32.99,  max:42.06},
-  {n:"中证A500",   min:11.57, cur:16.02,  max:18.34,  star:true},
-  {n:"恒生指数",   min:7.23,  cur:11.24,  max:12.97},
-  {n:"沪深300",    min:10.29, cur:13.59,  max:14.93},
+  {n:"恒生科技", min:14.86, cur:22.84, max:58.53},
+  {n:"创业板指", min:22.88, cur:37.65, max:66.47},
+  {n:"中证A50", min:13.88, cur:15.72, max:19.94, star:true},
+  {n:"中证2000", min:44.03, cur:119.82, max:227.93, star:true},
+  {n:"科创50", min:35.26, cur:131.78, max:263.93},
+  {n:"纳斯达克100", min:22.46, cur:29.81, max:39.25},
+  {n:"中证1000", min:24.02, cur:43.31, max:57.54},
+  {n:"标普500", min:17.90, cur:24.84, max:29.90},
+  {n:"中证500", min:15.58, cur:32.84, max:42.06},
+  {n:"中证A500", min:11.57, cur:15.69, max:18.34, star:true},
+  {n:"恒生指数", min:7.23, cur:10.91, max:12.97},
+  {n:"沪深300", min:10.29, cur:13.28, max:14.93},
 ];
 
 const industry = [
-  {n:"港股通创新药", min:22.75, cur:34.51, max:250.32, star:true},
-  {n:"食品饮料",     min:16.52, cur:21.05, max:46.57},
-  {n:"国防军工",     min:36.91, cur:61.22, max:109.50},
-  {n:"非银金融",     min:0.91,  cur:1.12,  max:1.62,  pb:true},
-  {n:"汽车",         min:19.55, cur:26.10, max:39.03},
-  {n:"电力设备",     min:13.64, cur:29.33, max:58.87},
-  {n:"人工智能",     min:30.90, cur:49.57, max:77.40},
-  {n:"公用事业",     min:1.39,  cur:1.60,  max:1.99,  pb:true},
-  {n:"计算机",       min:34.65, cur:62.10, max:102.14},
-  {n:"传媒",         min:20.47, cur:35.99, max:53.86},
-  {n:"房地产",       min:0.54,  cur:0.81,  max:1.09,  pb:true},
-  {n:"通信",         min:23.89, cur:52.40, max:79.92},
-  {n:"机器人",       min:27.94, cur:53.18, max:89.88},
-  {n:"钢铁",         min:0.73,  cur:1.01,  max:1.72,  pb:true},
-  {n:"家用电器",     min:11.71, cur:15.19, max:18.79},
-  {n:"电子",         min:20.32, cur:60.71, max:106.44},
-  {n:"医药生物",     min:20.31, cur:32.55, max:41.34},
-  {n:"银行",         min:0.42,  cur:0.53,  max:0.67,  pb:true},
-  {n:"有色金属",     min:1.68,  cur:3.13,  max:4.69,  pb:true},
-  {n:"机械设备",     min:19.20, cur:43.99, max:50.58},
-  {n:"煤炭",         min:1.11,  cur:1.55,  max:2.07,  pb:true},
-  {n:"石油石化",     min:1.10,  cur:1.43,  max:2.10,  pb:true},
+  {n:"港股通创新药", min:22.75, cur:35.56, max:250.32, star:true},
+  {n:"食品饮料", min:16.52, cur:20.46, max:46.57},
+  {n:"国防军工", min:36.91, cur:59.68, max:109.50},
+  {n:"非银金融", min:0.91, cur:1.07, max:1.55, pb:true},
+  {n:"汽车", min:19.55, cur:25.46, max:39.03},
+  {n:"电力设备", min:13.64, cur:28.17, max:58.87},
+  {n:"人工智能", min:30.90, cur:47.10, max:77.40},
+  {n:"公用事业", min:1.39, cur:1.57, max:1.99, pb:true},
+  {n:"计算机", min:34.65, cur:60.38, max:102.14},
+  {n:"传媒", min:20.47, cur:34.57, max:53.86},
+  {n:"房地产", min:0.54, cur:0.78, max:1.09, pb:true},
+  {n:"通信", min:23.89, cur:53.18, max:79.92},
+  {n:"机器人", min:27.94, cur:51.69, max:89.88},
+  {n:"钢铁", min:0.73, cur:0.97, max:1.58, pb:true},
+  {n:"家用电器", min:11.71, cur:14.91, max:18.79},
+  {n:"电子", min:20.32, cur:61.74, max:106.44},
+  {n:"医药生物", min:20.31, cur:32.15, max:41.34},
+  {n:"银行", min:0.42, cur:0.52, max:0.66, pb:true},
+  {n:"有色金属", min:1.68, cur:2.95, max:4.69, pb:true},
+  {n:"机械设备", min:19.20, cur:42.96, max:50.58},
+  {n:"煤炭", min:1.11, cur:1.49, max:2.02, pb:true},
+  {n:"石油石化", min:1.10, cur:1.36, max:2.05, pb:true},
 ];
 
 const dividend = [
