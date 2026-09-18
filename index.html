@@ -81,42 +81,45 @@
   .hidden{display:none;}
   @media (max-width:760px){
     header{padding:22px 14px 18px;}
-    header h1{font-size:22px;letter-spacing:1px;}
-    header .sub{font-size:12px;line-height:1.7;}
+    header h1{font-size:33px;letter-spacing:1px;}
+    header .sub{font-size:18px;line-height:1.7;}
     .wrap{padding:0 10px;}
     nav.tabs{display:flex;gap:8px;margin:12px 0 2px;}
-    .tab-btn{flex:1;padding:9px 6px;font-size:14px;}
+    .tab-btn{flex:1;padding:9px 6px;font-size:21px;}
     .card{padding:12px 12px 10px;border-radius:12px;margin-top:10px;}
-    .legend{font-size:12px;gap:10px 14px;justify-content:flex-start;padding:2px 0 8px;}
+    .legend{font-size:18px;gap:10px 14px;justify-content:flex-start;padding:2px 0 8px;}
     .sortbar{justify-content:flex-start;}
-    .sort-btn{padding:6px 12px;font-size:12px;}
+    .sort-btn{padding:6px 12px;font-size:18px;}
 
     /* 估值行（宽基/行业）：名称+位置 / 轨道 / 最低·当前·最高 三段式堆叠 */
     .vrow{grid-template-columns:repeat(3,1fr);grid-template-areas:
       "name name pos"
       "track track track"
       "min cur max";gap:4px 8px;padding:10px 2px;}
-    .vrow .vname{grid-area:name;font-size:14px;}
+    .vrow .vname{grid-area:name;font-size:21px;}
+    .star{font-size:19.5px;}
+    .badge-pb,.badge-hk,.badge-snap{font-size:16.5px;}
     .vrow .track{grid-area:track;height:28px;}
-    .vrow .pos{grid-area:pos;font-size:14px;}
-    .vrow .num{grid-area:min;text-align:center;font-size:12px;}
-    .vrow .num.cur{grid-area:cur;font-size:13px;}
+    .vrow .pos{grid-area:pos;font-size:21px;}
+    .vrow .num{grid-area:min;text-align:center;font-size:18px;}
+    .vrow .num.cur{grid-area:cur;font-size:19.5px;}
     .vrow .num:nth-child(5){grid-area:max;}
-    .vrow .num small{display:inline;font-size:10px;margin-right:3px;color:#9AA0AE;}
+    .vrow .num small{display:inline;font-size:15px;margin-right:3px;color:#9AA0AE;}
     .track .p.pmin,.track .p.pmax{width:12px;height:12px;}
     .track .p.pcur{width:16px;height:16px;}
 
     /* 红利行：名称整行，红/蓝轴线各占一行，中轴对齐在行中央 */
     .drow{grid-template-columns:1fr 1fr;grid-template-areas:"name name" "red blue";column-gap:0;row-gap:4px;padding:9px 2px;}
-    .drow .dname{grid-area:name;font-size:13px;padding-right:4px;}
+    .drow .dname{grid-area:name;font-size:19.5px;padding-right:4px;}
     .drow .daxis.red{grid-area:red;padding-right:6px;}
     .drow .daxis.blue{grid-area:blue;padding-left:6px;}
-    .daxis .v{font-size:12px;min-width:34px;}
+    .daxis .v{font-size:18px;min-width:34px;}
     .daxis .bar{height:11px;}
 
-    .notes{margin-top:10px;font-size:12px;line-height:1.8;}
-    footer{font-size:12px;line-height:1.8;padding:0 12px max(16px, env(safe-area-inset-bottom));}
-    #tip{font-size:12px;max-width:240px;}
+    .notes{margin-top:10px;font-size:18px;line-height:1.8;}
+    footer{font-size:18px;line-height:1.8;padding:0 12px max(16px, env(safe-area-inset-bottom));}
+    #tip{font-size:18px;max-width:240px;}
+    #tip .t1{font-size:21px;}
 
     /* 触屏设备：点按后不保留悬停高亮 */
     @media (hover:none){ .vrow:hover,.drow:hover{background:transparent;} }
