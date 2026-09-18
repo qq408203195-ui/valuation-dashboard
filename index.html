@@ -91,18 +91,17 @@
     .sortbar{justify-content:flex-start;}
     .sort-btn{padding:6px 12px;font-size:18px;}
 
-    /* 估值行（宽基/行业）：名称、轨道、分位同一水平线，数值一行贴在下方（参考韭圈儿海报版式） */
-    .vrow{grid-template-columns:128px 1fr 46px;grid-template-areas:
-      "name track pos"
-      "min cur max";gap:2px 8px;padding:8px 2px;}
-    .vrow .vname{grid-area:name;font-size:21px;}
-    .star{font-size:19.5px;}
+    /* 估值行（宽基/行业）：名称、轨道、分位同一水平线；数值绝对定位在轨道左端/中点/右端正下方（参考韭圈儿海报版式） */
+    .vrow{position:relative;grid-template-columns:140px 1fr 46px;grid-template-areas:"name track pos";gap:0 8px;padding:8px 0 28px;}
+    .vrow .vname{grid-area:name;font-size:19.5px;}
+    .star{font-size:15px;}
     .badge-pb,.badge-hk,.badge-snap{font-size:16.5px;}
     .vrow .track{grid-area:track;height:24px;}
     .vrow .pos{grid-area:pos;font-size:18px;align-self:center;}
-    .vrow .num{grid-area:min;text-align:center;font-size:18px;}
-    .vrow .num.cur{grid-area:cur;font-size:19.5px;}
-    .vrow .num:nth-child(5){grid-area:max;}
+    .vrow .num{position:absolute;top:36px;text-align:center;font-size:18px;line-height:1;}
+    .vrow .num:nth-child(3){left:148px;transform:translateX(-50%);}
+    .vrow .num.cur{left:calc(148px + (100% - 194px)/2);transform:translateX(-50%);font-size:19.5px;}
+    .vrow .num:nth-child(5){right:54px;transform:translateX(50%);}
     .vrow .num small{display:none;}
     .track .p.pmin,.track .p.pmax{width:12px;height:12px;}
     .track .p.pcur{width:16px;height:16px;}
