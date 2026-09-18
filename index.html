@@ -49,6 +49,8 @@
   .num{font-size:14px;text-align:right;font-variant-numeric:tabular-nums;color:#555;}
   .num.cur{color:var(--red);font-weight:700;font-size:15px;}
   .num small{display:block;font-size:11px;color:var(--muted);font-weight:400;}
+  /* 数值包装层：桌面端对网格透明（子项直接参与 6 列布局）；移动端媒体查询里改为 flex 实现数值对齐轨道两端 */
+  .vals{display:contents;}
   .pos{font-size:15px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums;}
   .pos.low{color:var(--green);} .pos.mid{color:var(--yellow);} .pos.high{color:var(--red);}
 
@@ -91,24 +93,23 @@
     .sortbar{justify-content:flex-start;}
     .sort-btn{padding:6px 12px;font-size:18px;}
 
-    /* 估值行（宽基/行业）：名称、轨道、分位同一水平线；数值绝对定位在轨道左端/中点/右端正下方（参考韭圈儿海报版式） */
-    .vrow{position:relative;grid-template-columns:140px 1fr 46px;grid-template-areas:"name track pos";gap:0 8px;padding:8px 0 28px;}
-    .vrow .vname{grid-area:name;font-size:19.5px;}
-    .star{font-size:15px;}
+    /* 估值行（宽基/行业）：名称、轨道、分位同一水平线；数值行用正常流 flex 对齐轨道两端/中点（不依赖绝对定位，避免 iOS 字体度量差异导致重叠） */
+    .vrow{grid-template-columns:140px 1fr 52px;grid-template-areas:"name track pos" ". vals .";gap:2px 8px;padding:8px 0 7px;}
+    .vrow .vname{grid-area:name;font-size:18px;flex-wrap:nowrap;}
+    .star{font-size:13px;}
     .badge-pb,.badge-hk,.badge-snap{font-size:16.5px;}
     .vrow .track{grid-area:track;height:24px;}
-    .vrow .pos{grid-area:pos;font-size:18px;align-self:center;}
-    .vrow .num{position:absolute;top:36px;text-align:center;font-size:18px;line-height:1;}
-    .vrow .num:nth-child(3){left:148px;transform:translateX(-50%);}
-    .vrow .num.cur{left:calc(148px + (100% - 194px)/2);transform:translateX(-50%);font-size:19.5px;}
-    .vrow .num:nth-child(5){right:54px;transform:translateX(50%);}
+    .vrow .pos{grid-area:pos;font-size:16px;justify-self:end;align-self:center;white-space:nowrap;}
+    .vrow .vals{grid-area:vals;display:flex;justify-content:space-between;align-items:baseline;min-width:0;margin:0 -6px;}
+    .vrow .num{font-size:15px;line-height:1.2;}
+    .vrow .num.cur{font-size:16px;}
     .vrow .num small{display:none;}
     .track .p.pmin,.track .p.pmax{width:12px;height:12px;}
     .track .p.pcur{width:16px;height:16px;}
 
     /* 红利行：名称与红/蓝双轴同一水平线；名称区加宽保证不换行，右侧轴线区相应压缩 */
     .drow{grid-template-columns:226px 1fr 1fr;grid-template-areas:"name red blue";column-gap:6px;padding:8px 2px;}
-    .drow .dname{grid-area:name;font-size:16px;padding-right:0;}
+    .drow .dname{grid-area:name;font-size:15.5px;padding-right:0;white-space:nowrap;}
     .drow .badge-hk,.drow .badge-snap{font-size:12px;padding:1px 4px;}
     .drow .daxis.red{grid-area:red;padding-right:6px;}
     .drow .daxis.blue{grid-area:blue;padding-left:6px;}
@@ -119,6 +120,25 @@
     footer{font-size:13px;line-height:1.7;padding:0 12px max(16px, env(safe-area-inset-bottom));}
     #tip{font-size:18px;max-width:240px;}
     #tip .t1{font-size:21px;}
+
+    /* 窄屏二档（≤382px，iPhone SE/mini 及多数安卓）：
+       vals 三个数值的最小内容宽约 125px，加上固定列后 390px 以下会挤出网格边界，
+       故收窄名称/分位列、整体降一号字，并放宽页面留白给数据让位 */
+    @media (max-width:382px){
+      .wrap{padding:0 8px;}
+      .card{padding:10px;}
+      .vrow{grid-template-columns:124px 1fr 46px;}
+      .vrow .vname{font-size:16px;}
+      .star{font-size:12px;}
+      .badge-pb,.badge-hk,.badge-snap{font-size:15px;}
+      .vrow .pos{font-size:15px;}
+      .vrow .num{font-size:15px;}
+      .vrow .num.cur{font-size:16px;}
+      .drow{grid-template-columns:190px 1fr 1fr;}
+      .drow .dname{font-size:13.5px;flex-wrap:nowrap;}
+      .drow .badge-hk,.drow .badge-snap{font-size:10.5px;padding:1px 3px;}
+      .daxis .v{font-size:13.5px;min-width:28px;}
+    }
 
     /* 触屏设备：点按后不保留悬停高亮 */
     @media (hover:none){ .vrow:hover,.drow:hover{background:transparent;} }
@@ -302,9 +322,11 @@ function renderValuation(listId, data, sortMode, defaultOrder){
         <div class="p pcur" style="left:${cp}%"></div>
         <div class="p pmax" style="left:100%"></div>
       </div>
-      <div class="num"><small>最低</small>${fmt(d.min)}</div>
-      <div class="num cur"><small>当前</small>${fmt(d.cur)}</div>
-      <div class="num"><small>最高</small>${fmt(d.max)}</div>
+      <div class="vals">
+        <div class="num"><small>最低</small>${fmt(d.min)}</div>
+        <div class="num cur"><small>当前</small>${fmt(d.cur)}</div>
+        <div class="num"><small>最高</small>${fmt(d.max)}</div>
+      </div>
       <div class="pos ${cls}">${p.toFixed(0)}%</div>
     </div>`;
   }).join("");
