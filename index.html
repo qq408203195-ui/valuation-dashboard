@@ -149,7 +149,7 @@
 
 <header>
   <h1>指数估值仪表盘</h1>
-  <div class="sub">统计周期 <b>2021/9/23 — 2026/9/23</b>（近5年）　·　数据来源 <b>Wind · 韭圈儿</b>　·　<span style="opacity:.75">REITs/二手房租息为 2026/9/18 快照</span></div>
+  <div class="sub">统计周期 <b>2021/9/23 — 2026/9/23</b>（近5年）　·　数据来源 <b>Wind · 韭圈儿</b>　·　<span style="opacity:.75">REITs/二手房租息为 2026/9/24 快照</span></div>
 </header>
 
 <div class="wrap">
@@ -222,13 +222,13 @@
       <div class="notes">
         <b>黄标（港股）：</b>境内港股红利基金需缴纳额外 <b>10%–28%</b> 红利税，真实收益及回本时间与账面数值有一定差距<br>
         红蓝两线以同一根中线为起点、方向相反：红条向左延伸（长度 = 回本时间 ÷ 32 年），蓝条向右延伸（长度 = 股息率 ÷ 7%），全部指数的起点严格重合于同一条垂直线
-        9 个红利指数股息率取自 Wind（2026.9.23），REITs 两项与二手房租息为 2026.9.18 静态值（Wind 无对应指数，来源：韭圈儿、好好选房 App）<br>
+        9 个红利指数股息率取自 Wind（2026.9.23），REITs 两项与二手房租息为 2026.9.24 静态值（Wind 无对应指数，来源：韭圈儿、好好选房 App）<br>
         <b>回本时间公式：</b>log(2) ÷ log(1 + 股息率)，即红利再投资复利口径下收回本金所需年数（假设股息率不变、股价不变）；同口径的简单算法 100÷股息率 会明显更长
       </div>
     </div>
   </section>
 
-  <footer>基金有风险　投资需谨慎　·　宽基/行业指数数据：Wind（2026.9.23）　红利指数数据：Wind（2026.9.23）　REITs/二手房租息：静态快照（2026.9.18）</footer>
+  <footer>基金有风险　投资需谨慎　·　宽基/行业指数数据：Wind（2026.9.23）　红利指数数据：Wind（2026.9.23）　REITs/二手房租息：静态快照（2026.9.24）</footer>
 </div>
 
 <div id="tip"></div>
@@ -278,16 +278,16 @@ const dividend = [
   {n:"恒生港股通高股息低波动", y:6.14, hk:true},
   {n:"国新港股通央企红利", y:5.89, hk:true},
   {n:"恒生港股通高股息率", y:5.33, hk:true},
-  {n:"经营权REITs市值加权IRR", y:5.33, snap:true},
+  {n:"经营权REITs市值加权IRR", y:5.32, snap:true},
   {n:"港股通央企红利", y:5.29, hk:true},
   {n:"港股通高股息CNY", y:5.07, hk:true},
-  {n:"产权REITs市值加权分派率", y:4.76, snap:true},
+  {n:"产权REITs市值加权分派率", y:4.79, snap:true},
   {n:"红利低波100", y:4.45},
   {n:"红利低波", y:4.42},
   {n:"中证红利", y:4.29},
   {n:"上证红利", y:4.05},
-  {n:"北京二手房租息中位数", y:2.39, snap:true},
-  {n:"上海二手房租息中位数", y:2.24, snap:true},
+  {n:"北京二手房租息中位数", y:2.29, snap:true},
+  {n:"上海二手房租息中位数", y:2.29, snap:true},
 ];
 // 回本时间（年）= log(2) / log(1 + 股息率)：红利再投资复利口径收回本金所需年数
 dividend.forEach(d => d.years = Math.log(2) / Math.log(1 + d.y / 100));
@@ -359,7 +359,7 @@ function tipHtml(d){
       股息率：<b>${d.y.toFixed(2)}%</b><br>
       <span class="mut">回本口径：红利再投资复利，log(2)÷log(1+股息率)</span>
       ${d.hk ? '<br><span class="warn">⚠ 港股通类：需缴额外 10%–28% 红利税，实际回本更久</span>' : ''}
-      ${d.snap ? '<br><span class="warn">📌 非标准指数，为 2026.9.18 快照值（Wind 无对应数据）</span>' : ''}`;
+      ${d.snap ? '<br><span class="warn">📌 非标准指数，为 2026.9.24 快照值（Wind 无对应数据）</span>' : ''}`;
   }
   const metric = d.pb ? "PB（市净率）" : "PE（市盈率）";
   const p = posOf(d);
