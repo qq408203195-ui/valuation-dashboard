@@ -62,6 +62,12 @@
   .badge-hk{background:#FFF3CD;color:#8A6D00;font-size:11px;font-weight:700;border-radius:4px;padding:1px 5px;}
   .badge-snap{background:#ECEFF4;color:#5B6470;font-size:11px;font-weight:700;border-radius:4px;padding:1px 5px;}
   /* 红利：以中线为共同原点，红条向左延伸（回本越久越长），蓝条向右延伸（股息越高越长） */
+  .dhead{display:grid;grid-template-columns:186px 1fr 1fr;column-gap:0;padding:2px 4px 7px;border-bottom:2px solid #E4E4EE;}
+  .dh-name{font-size:13px;font-weight:600;color:#8A8F9C;display:flex;align-items:flex-end;}
+  .dh{font-size:13.5px;font-weight:700;}
+  .dh.red{color:var(--red);text-align:right;padding-right:8px;border-right:2px solid #C9C9D6;}
+  .dh.blue{color:#1D4ED8;text-align:left;padding-left:8px;}
+  .dh .mini{display:none;}
   .daxis{display:flex;align-items:center;gap:7px;min-width:0;}
   .daxis.red{justify-content:flex-end;border-right:2px solid #C9C9D6;padding-right:8px;}
   .daxis.blue{justify-content:flex-start;padding-left:8px;}
@@ -71,8 +77,9 @@
   .daxis.red .bar{background:var(--red);}
   .daxis.blue .bar{background:#1D4ED8;}
   .daxis .v{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;flex:none;min-width:42px;}
-  .daxis.red .v{color:var(--red);text-align:right;}
-  .daxis.blue .v{color:#1D4ED8;text-align:left;}
+  .daxis .v i{font-style:normal;font-size:.72em;opacity:.8;margin-left:1px;}
+  .daxis.red .v{color:var(--red);text-align:right;min-width:54px;}
+  .daxis.blue .v{color:#1D4ED8;text-align:left;min-width:46px;}
   .notes{margin-top:14px;font-size:13px;color:#777;line-height:1.9;}
   .notes b{color:#555;}
   footer{margin-top:18px;text-align:center;font-size:13px;color:#9A9AA8;}
@@ -108,12 +115,18 @@
     .track .p.pcur{width:16px;height:16px;}
 
     /* 红利行：名称与红/蓝双轴同一水平线；名称区加宽保证不换行，右侧轴线区相应压缩 */
-    .drow{grid-template-columns:226px 1fr 1fr;grid-template-areas:"name red blue";column-gap:6px;padding:8px 2px;}
-    .drow .dname{grid-area:name;font-size:15.5px;padding-right:0;white-space:nowrap;}
+    .drow{grid-template-columns:216px 1fr 1fr;grid-template-areas:"name red blue";column-gap:6px;padding:8px 2px;}
+    .drow .dname{grid-area:name;font-size:15px;padding-right:0;white-space:nowrap;}
     .drow .badge-hk,.drow .badge-snap{font-size:12px;padding:1px 4px;}
     .drow .daxis.red{grid-area:red;padding-right:6px;}
     .drow .daxis.blue{grid-area:blue;padding-left:6px;}
-    .daxis .v{font-size:16px;min-width:30px;}
+    .dhead{grid-template-columns:216px 1fr 1fr;column-gap:6px;padding:0 2px 6px;}
+    .dh{font-size:12px;}
+    .dh .full{display:none;}
+    .dh .mini{display:inline;}
+    .daxis .v{font-size:15px;}
+    .daxis.red .v{min-width:50px;}
+    .daxis.blue .v{min-width:48px;}
     .daxis .bar{height:11px;}
 
     .notes{margin-top:10px;font-size:13px;line-height:1.7;}
@@ -137,7 +150,11 @@
       .drow{grid-template-columns:190px 1fr 1fr;}
       .drow .dname{font-size:13.5px;flex-wrap:nowrap;}
       .drow .badge-hk,.drow .badge-snap{font-size:10.5px;padding:1px 3px;}
-      .daxis .v{font-size:13.5px;min-width:28px;}
+      .dhead{grid-template-columns:190px 1fr 1fr;}
+      .dh{font-size:11px;}
+      .daxis .v{font-size:13.5px;}
+      .daxis.red .v{min-width:46px;}
+      .daxis.blue .v{min-width:42px;}
     }
 
     /* 触屏设备：点按后不保留悬停高亮 */
@@ -218,10 +235,15 @@
         <button class="sort-btn" data-sort="yield">股息率 高→低</button>
         <button class="sort-btn" data-sort="years">回本时间 短→长</button>
       </div>
+      <div class="dhead">
+        <div class="dh-name">红利指数</div>
+        <div class="dh red"><span class="full">复利回本时间（年）· 越短越好</span><span class="mini">回本</span></div>
+        <div class="dh blue"><span class="full">股息率（%）· 越高越好</span><span class="mini">股息率</span></div>
+      </div>
       <div id="list-dividend"></div>
       <div class="notes">
         <b>黄标（港股）：</b>境内港股红利基金需缴纳额外 <b>10%–28%</b> 红利税，真实收益及回本时间与账面数值有一定差距<br>
-        红蓝两线以同一根中线为起点、方向相反：红条向左延伸（长度 = 回本时间 ÷ 32 年），蓝条向右延伸（长度 = 股息率 ÷ 7%），全部指数的起点严格重合于同一条垂直线
+        红蓝两线以同一根中线为起点、方向相反：红条向左延伸（长度 = 回本时间 ÷ 32 年），蓝条向右延伸（长度 = 股息率 ÷ 7%），全部指数的起点严格重合于同一条垂直线<br>
         9 个红利指数股息率取自 Wind（2026.10.9），REITs 两项与二手房租息为 2026.9.24 静态值（Wind 无对应指数，来源：韭圈儿、好好选房 App）<br>
         <b>回本时间公式：</b>log(2) ÷ log(1 + 股息率)，即红利再投资复利口径下收回本金所需年数（假设股息率不变、股价不变）；同口径的简单算法 100÷股息率 会明显更长
       </div>
@@ -343,8 +365,8 @@ function renderDividend(sortMode){
   document.getElementById("list-dividend").innerHTML = rows.map((d,i)=>{
     return `<div class="drow" data-i="${i}">
       <div class="dname">${d.n}${d.hk ? '<span class="badge-hk">港股</span>' : ''}${d.snap ? '<span class="badge-snap">快照</span>' : ''}</div>
-      <div class="daxis red"><div class="dbarwrap"><div class="bar" style="width:${(d.years/MAX_YEARS*100).toFixed(1)}%"></div></div><span class="v">${d.years.toFixed(2)}</span></div>
-      <div class="daxis blue"><span class="v">${d.y.toFixed(2)}</span><div class="dbarwrap"><div class="bar" style="width:${(d.y/MAX_YIELD*100).toFixed(1)}%"></div></div></div>
+      <div class="daxis red"><div class="dbarwrap"><div class="bar" style="width:${(d.years/MAX_YEARS*100).toFixed(1)}%"></div></div><span class="v">${d.years.toFixed(2)}<i>年</i></span></div>
+      <div class="daxis blue"><span class="v">${d.y.toFixed(2)}<i>%</i></span><div class="dbarwrap"><div class="bar" style="width:${(d.y/MAX_YIELD*100).toFixed(1)}%"></div></div></div>
     </div>`;
   }).join("");
 }
