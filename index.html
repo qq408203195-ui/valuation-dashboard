@@ -233,7 +233,7 @@
       <div class="sortbar" data-for="dividend">
         <button class="sort-btn active" data-sort="default">默认顺序</button>
         <button class="sort-btn" data-sort="yield">股息率 高→低</button>
-        <button class="sort-btn" data-sort="years">回本时间 短→长</button>
+        <button class="sort-btn" data-sort="years">回本时间 长→短</button>
       </div>
       <div class="dhead">
         <div class="dh-name">红利指数</div>
@@ -359,7 +359,7 @@ const MAX_YEARS = 32, MAX_YIELD = 6.2;
 function renderDividend(sortMode){
   let rows = dividend.map((d,i)=>({...d, order:i}));
   if(sortMode==="yield") rows.sort((a,b)=>b.y-a.y);
-  if(sortMode==="years") rows.sort((a,b)=>a.years-b.years);
+  if(sortMode==="years") rows.sort((a,b)=>b.years-a.years);
   currentRows["list-dividend"] = rows;
 
   document.getElementById("list-dividend").innerHTML = rows.map((d,i)=>{
