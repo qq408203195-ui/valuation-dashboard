@@ -10,11 +10,12 @@
     --bg:#F4F5FA; --text:#2B2B2B; --muted:#8A8F9C; --line:#ECECF2;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html{-webkit-text-size-adjust:100%;}
   body{font-family:"Microsoft YaHei","PingFang SC",sans-serif;background:var(--bg);color:var(--text);padding-bottom:48px;}
   header{background:linear-gradient(135deg,#7B7BFF,#5A5AD8);color:#fff;padding:30px 20px 24px;text-align:center;}
   header h1{font-size:26px;letter-spacing:2px;}
   header .sub{margin-top:8px;font-size:14px;opacity:.9;}
-  header .sub b{font-weight:600;}
+  header .sub b{font-weight:600;white-space:nowrap;}
   .wrap{max-width:960px;margin:0 auto;padding:0 14px;}
   nav.tabs{display:flex;gap:10px;justify-content:center;margin:18px 0 4px;}
   .tab-btn{border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:600;
@@ -23,8 +24,11 @@
   .card{background:#fff;border-radius:14px;box-shadow:0 1px 6px rgba(40,40,90,.06);padding:16px 18px;margin-top:14px;}
   .legend{display:flex;flex-wrap:wrap;gap:18px;justify-content:center;font-size:14px;color:#666;padding:4px 0 10px;}
   .legend .it{display:flex;align-items:center;gap:6px;}
-  .dot{border-radius:50%;flex:none;}
+  .dot{border-radius:50%;flex:none;width:9px;height:9px;}
   .dot.b{background:var(--blue);} .dot.r{background:var(--red);} .dot.y{background:var(--yellow);}
+  /* 图例长短文案：桌面用 .lg-l，手机用 .lg-s / .only-m，避免窄屏换行占掉首屏
+     （隐藏规则须带 .legend 前缀，否则优先级被 .legend .it{display:flex} 压过） */
+  .legend .lg-s,.legend .only-m{display:none;}
   .sortbar{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;padding-bottom:8px;border-bottom:1px solid var(--line);}
   .sort-btn{border:1px solid #E3E4EE;background:#fff;color:#666;font-family:inherit;font-size:13px;
     padding:5px 14px;border-radius:999px;cursor:pointer;transition:.15s;}
@@ -89,72 +93,78 @@
   #tip .warn{color:#FFD666;}
   .hidden{display:none;}
   @media (max-width:760px){
-    header{padding:22px 14px 18px;}
-    header h1{font-size:33px;letter-spacing:1px;}
-    header .sub{font-size:18px;line-height:1.7;}
+    /* 手机端（2026-11-05 改版）：字号统一改用 clamp 随屏宽自适应，
+       页眉/图例/排序条压到 3 行以内，让首屏直接落在数据行上 */
+    header{padding:14px 12px 13px;}
+    header h1{font-size:clamp(19px,5vw,22px);letter-spacing:1px;}
+    header .sub{margin-top:5px;font-size:clamp(10.5px,2.9vw,12.5px);line-height:1.5;}
     .wrap{padding:0 10px;}
-    nav.tabs{display:flex;gap:8px;margin:12px 0 2px;}
-    .tab-btn{flex:1;padding:9px 6px;font-size:21px;}
-    .card{padding:12px 12px 10px;border-radius:12px;margin-top:10px;}
-    .legend{font-size:18px;gap:10px 14px;justify-content:flex-start;padding:2px 0 8px;}
-    .sortbar{justify-content:flex-start;}
-    .sort-btn{padding:6px 12px;font-size:18px;}
+    nav.tabs{display:flex;gap:6px;margin:9px 0 0;}
+    .tab-btn{flex:1;padding:8px 4px;font-size:clamp(14px,3.9vw,16px);}
+    .card{padding:9px 10px 8px;border-radius:12px;margin-top:8px;}
+    .legend{font-size:clamp(10.5px,2.9vw,12.5px);gap:4px 10px;justify-content:flex-start;padding:0 0 6px;}
+    .legend .lg-l,.legend .only-d{display:none;}
+    .legend .lg-s{display:inline;}
+    .legend .only-m{display:inline-flex;}
+    .dot{width:8px;height:8px;}
+    .sortbar{flex-wrap:nowrap;gap:5px;padding-bottom:6px;}
+    .sort-btn{flex:1;padding:5px 2px;font-size:clamp(11px,3vw,12.5px);white-space:nowrap;}
 
     /* 估值行（宽基/行业）：名称、轨道、分位同一水平线；数值行用正常流 flex 对齐轨道两端/中点（不依赖绝对定位，避免 iOS 字体度量差异导致重叠） */
-    .vrow{grid-template-columns:140px 1fr 52px;grid-template-areas:"name track pos" ". vals .";gap:2px 8px;padding:8px 0 7px;}
-    .vrow .vname{grid-area:name;font-size:18px;flex-wrap:nowrap;}
-    .star{font-size:13px;}
-    .badge-pb,.badge-hk,.badge-snap{font-size:16.5px;}
-    .vrow .track{grid-area:track;height:24px;}
-    .vrow .pos{grid-area:pos;font-size:16px;justify-self:end;align-self:center;white-space:nowrap;}
+    .vrow{grid-template-columns:140px 1fr 48px;grid-template-areas:"name track pos" ". vals .";gap:1px 8px;padding:6px 0 5px;}
+    .vrow .vname{grid-area:name;font-size:clamp(14px,3.8vw,16px);flex-wrap:nowrap;}
+    .star{font-size:12px;}
+    .badge-pb,.badge-hk,.badge-snap{font-size:clamp(9.5px,2.5vw,11px);}
+    .vrow .track{grid-area:track;height:20px;}
+    .vrow .pos{grid-area:pos;font-size:clamp(13px,3.5vw,14.5px);justify-self:end;align-self:center;white-space:nowrap;}
     .vrow .vals{grid-area:vals;display:flex;justify-content:space-between;align-items:baseline;min-width:0;margin:0 -6px;}
-    .vrow .num{font-size:15px;line-height:1.2;}
-    .vrow .num.cur{font-size:16px;}
+    .vrow .num{font-size:clamp(12px,3.2vw,13.5px);line-height:1.2;}
+    .vrow .num.cur{font-size:clamp(13px,3.5vw,14.5px);}
     .vrow .num small{display:none;}
-    .track .p.pmin,.track .p.pmax{width:12px;height:12px;}
-    .track .p.pcur{width:16px;height:16px;}
+    .track .p.pmin,.track .p.pmax{width:10px;height:10px;}
+    .track .p.pcur{width:14px;height:14px;}
 
     /* 红利行：名称与红/蓝双轴同一水平线；名称区加宽保证不换行，右侧轴线区相应压缩 */
-    .drow{grid-template-columns:216px 1fr 1fr;grid-template-areas:"name red blue";column-gap:6px;padding:8px 2px;}
-    .drow .dname{grid-area:name;font-size:15px;padding-right:0;white-space:nowrap;}
-    .drow .badge-hk,.drow .badge-snap{font-size:12px;padding:1px 4px;}
-    .drow .daxis.red{grid-area:red;padding-right:6px;}
-    .drow .daxis.blue{grid-area:blue;padding-left:6px;}
-    .dhead{grid-template-columns:216px 1fr 1fr;column-gap:6px;padding:0 2px 6px;}
-    .dh{font-size:12px;}
+    /* 红利行：窄屏下名称独占一行、红蓝双轴各占半屏，
+       否则名称列挤掉轴宽后条长只剩十几像素、读不出量级 */
+    .drow{grid-template-columns:1fr 1fr;grid-template-areas:"name name" "red blue";row-gap:2px;column-gap:0;padding:6px 2px;}
+    .drow .dname{grid-area:name;font-size:clamp(12px,3.3vw,14px);padding-right:0;white-space:nowrap;}
+    .drow .badge-hk,.drow .badge-snap{font-size:clamp(9px,2.4vw,10.5px);padding:1px 3px;}
+    .drow .daxis.red{grid-area:red;padding-right:8px;}
+    .drow .daxis.blue{grid-area:blue;padding-left:8px;}
+    .dhead{grid-template-columns:1fr 1fr;padding:0 2px 5px;}
+    .dhead .dh-name{display:none;}
+    .dh{font-size:clamp(10px,2.7vw,12px);}
     .dh .full{display:none;}
     .dh .mini{display:inline;}
-    .daxis .v{font-size:15px;}
-    .daxis.red .v{min-width:50px;}
-    .daxis.blue .v{min-width:48px;}
-    .daxis .bar{height:11px;}
+    .daxis .v{font-size:clamp(12px,3.2vw,14px);}
+    .daxis.red .v{min-width:44px;}
+    .daxis.blue .v{min-width:42px;}
+    .daxis .bar{height:10px;}
 
-    .notes{margin-top:10px;font-size:13px;line-height:1.7;}
-    footer{font-size:13px;line-height:1.7;padding:0 12px max(16px, env(safe-area-inset-bottom));}
-    #tip{font-size:18px;max-width:240px;}
-    #tip .t1{font-size:21px;}
+    .notes{margin-top:8px;font-size:clamp(11px,2.9vw,12.5px);line-height:1.65;}
+    footer{font-size:clamp(10.5px,2.8vw,12px);line-height:1.6;padding:0 12px max(14px, env(safe-area-inset-bottom));}
+    #tip{font-size:14px;max-width:240px;}
+    #tip .t1{font-size:16px;}
 
-    /* 窄屏二档（≤382px，iPhone SE/mini 及多数安卓）：
-       vals 三个数值的最小内容宽约 125px，加上固定列后 390px 以下会挤出网格边界，
-       故收窄名称/分位列、整体降一号字，并放宽页面留白给数据让位 */
+    /* 窄屏二档（≤382px，iPhone SE/mini 及多数安卓）：再降一号字并收窄名称列，
+       给轨道/数值让出空间；不改数值行的正常流 flex 结构 */
     @media (max-width:382px){
       .wrap{padding:0 8px;}
-      .card{padding:10px;}
-      .vrow{grid-template-columns:124px 1fr 46px;}
-      .vrow .vname{font-size:16px;}
-      .star{font-size:12px;}
-      .badge-pb,.badge-hk,.badge-snap{font-size:15px;}
-      .vrow .pos{font-size:15px;}
-      .vrow .num{font-size:15px;}
-      .vrow .num.cur{font-size:16px;}
-      .drow{grid-template-columns:190px 1fr 1fr;}
-      .drow .dname{font-size:13.5px;flex-wrap:nowrap;}
-      .drow .badge-hk,.drow .badge-snap{font-size:10.5px;padding:1px 3px;}
-      .dhead{grid-template-columns:190px 1fr 1fr;}
-      .dh{font-size:11px;}
-      .daxis .v{font-size:13.5px;}
-      .daxis.red .v{min-width:46px;}
-      .daxis.blue .v{min-width:42px;}
+      .card{padding:8px 9px 7px;}
+      .vrow{grid-template-columns:124px 1fr 44px;}
+      .vrow .vname{font-size:14px;}
+      .star{font-size:11px;}
+      .badge-pb,.badge-hk,.badge-snap{font-size:10px;}
+      .vrow .pos{font-size:13px;}
+      .vrow .num{font-size:12px;}
+      .vrow .num.cur{font-size:13px;}
+      .drow{grid-template-columns:1fr 1fr;}
+      .drow .dname{font-size:12px;flex-wrap:nowrap;}
+      .drow .badge-hk,.drow .badge-snap{font-size:9.5px;padding:1px 3px;}
+      .daxis .v{font-size:12px;}
+      .daxis.red .v{min-width:42px;}
+      .daxis.blue .v{min-width:40px;}
     }
 
     /* 触屏设备：点按后不保留悬停高亮 */
@@ -180,10 +190,11 @@
   <section id="tab-broad">
     <div class="card">
       <div class="legend">
-        <span class="it"><span class="dot b"></span>区间最低估值</span>
-        <span class="it"><span class="dot r"></span>当前估值</span>
-        <span class="it"><span class="dot y"></span>区间最高估值</span>
-        <span class="it">右侧 % = 区间内相对位置</span>
+        <span class="it"><span class="dot b"></span><span class="lg-l">区间最低估值</span><span class="lg-s">最低</span></span>
+        <span class="it"><span class="dot r"></span><span class="lg-l">当前估值</span><span class="lg-s">当前</span></span>
+        <span class="it"><span class="dot y"></span><span class="lg-l">区间最高估值</span><span class="lg-s">最高</span></span>
+        <span class="it only-d">右侧 % = 区间内相对位置</span>
+        <span class="it only-m">右列 = 近5年分位</span>
       </div>
       <div class="sortbar" data-for="broad">
         <button class="sort-btn active" data-sort="default">默认顺序</button>
@@ -202,10 +213,11 @@
   <section id="tab-industry" class="hidden">
     <div class="card">
       <div class="legend">
-        <span class="it"><span class="dot b"></span>区间最低估值</span>
-        <span class="it"><span class="dot r"></span>当前估值</span>
-        <span class="it"><span class="dot y"></span>区间最高估值</span>
-        <span class="it"><span class="badge-pb">PB</span> 黄标行业用市净率 PB 估值</span>
+        <span class="it"><span class="dot b"></span><span class="lg-l">区间最低估值</span><span class="lg-s">最低</span></span>
+        <span class="it"><span class="dot r"></span><span class="lg-l">当前估值</span><span class="lg-s">当前</span></span>
+        <span class="it"><span class="dot y"></span><span class="lg-l">区间最高估值</span><span class="lg-s">最高</span></span>
+        <span class="it only-d"><span class="badge-pb">PB</span> 黄标行业用市净率 PB 估值</span>
+        <span class="it only-m"><span class="badge-pb">PB</span> 黄标=PB</span>
       </div>
       <div class="sortbar" data-for="industry">
         <button class="sort-btn active" data-sort="default">默认顺序</button>
@@ -226,9 +238,9 @@
   <section id="tab-dividend" class="hidden">
     <div class="card">
       <div class="legend">
-        <span class="it"><span class="dot" style="background:var(--red)"></span>复利回本时间（年）— 由中线向左，越左越长</span>
-        <span class="it"><span class="dot" style="background:#1D4ED8"></span>股息率（%）— 由中线向右，越右越高</span>
-        <span class="it"><span class="badge-hk">港股</span> 需缴额外红利税</span>
+        <span class="it"><span class="dot" style="background:var(--red)"></span><span class="lg-l">复利回本时间（年）— 由中线向左，越左越长</span><span class="lg-s">回本·向左</span></span>
+        <span class="it"><span class="dot" style="background:#1D4ED8"></span><span class="lg-l">股息率（%）— 由中线向右，越右越高</span><span class="lg-s">股息率·向右</span></span>
+        <span class="it"><span class="badge-hk">港股</span><span class="lg-l">需缴额外红利税</span><span class="lg-s">含税差</span></span>
       </div>
       <div class="sortbar" data-for="dividend">
         <button class="sort-btn active" data-sort="default">默认顺序</button>
